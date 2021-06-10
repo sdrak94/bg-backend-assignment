@@ -1,0 +1,20 @@
+{
+  "cancelpolicies": [
+    {
+      "cancelpolicyId": 1,
+      "desc": "Cancelation instant."
+    },
+    {
+      "cancelpolicyId": 2,
+      "desc": "Cancelation with penalty."
+    },
+    {
+      "cancelpolicyId": 3,
+      "desc": "Cancelation with delay."
+    },
+    {
+      "cancelpolicyId": 10,
+      "desc": "Cancelation not available."
+    }
+  ]
+}

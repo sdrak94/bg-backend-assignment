@@ -1,0 +1,19 @@
+{
+  "regions": [
+    {
+      "regionId": 1,
+      "name": "Arcadia",
+      "desc": "Arcadia is a region in the nothern part of Mars."
+    },
+    {
+      "regionId": 2,
+      "name": "Memnonia",
+      "desc": "Memnonia is a windy region with hospitable environment."
+    },
+    {
+      "regionId": 3,
+      "name": "Eridania",
+      "desc": "If you prefer a quite place then Eridania should be your favorite region."
+    }
+  ]
+}

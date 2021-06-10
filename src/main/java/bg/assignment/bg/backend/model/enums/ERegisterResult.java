@@ -1,0 +1,20 @@
+package bg.assignment.bg.backend.model.enums;
+
+public enum ERegisterResult
+{
+	//validation
+	FAILED__IN__USERNAME_LESS_3CHAR,
+	FAILED__IN__PASSWORD_LESS_3CHAR,
+	FAILED__IN__PASSWORD_NOT_CPASSWORD,
+	
+	SUCCESS_IN__VALIDATED,
+
+	//database
+	FAILED__DB__USERNAME_EXISTS,
+	FAILED__DB__MAIL_EXISTS,
+	FAILED__DB__INTERNAL_ERROR,
+	
+	SUCCESS__DB__READY,
+	
+	SUCCESS__DB__CREATED;
+}
