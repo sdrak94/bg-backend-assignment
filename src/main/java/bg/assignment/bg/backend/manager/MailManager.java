@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import bg.assignment.bg.backend.rest.model.Register;
+import bg.assignment.bg.backend.rest.model.requests.RequestRegister;
 
 @Service
 @Scope("singleton")
@@ -18,7 +18,7 @@ public class MailManager
 	@Autowired
 	private JavaMailSender mailSender;
 
-	public void sendVerificationEmail(Register login)
+	public void sendVerificationEmail(RequestRegister login)
 	{
 
 	}

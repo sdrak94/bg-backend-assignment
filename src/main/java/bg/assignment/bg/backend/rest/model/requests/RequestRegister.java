@@ -1,12 +1,10 @@
-package bg.assignment.bg.backend.rest.model;
+package bg.assignment.bg.backend.rest.model.requests;
 
 import java.io.Serializable;
 
-public class Register implements Serializable
+public class RequestRegister extends AUserRequest implements Serializable
 {
-	private String _colonistId = "";
-
-	private String _email = "";
+	private String _mail = "";
 	
 	private String _pass = "";
 	
@@ -16,24 +14,14 @@ public class Register implements Serializable
 	
 	private static final long serialVersionUID = 1L;
 
-	public String getColonistId()
+	public String getMail()
 	{
-		return _colonistId;
+		return _mail;
 	}
 
-	public void setName(String colonistId)
+	public void setMail(String mail)
 	{
-		_colonistId = colonistId;
-	}
-
-	public String getEmail()
-	{
-		return _email;
-	}
-
-	public void setEmail(String email)
-	{
-		_email = email;
+		_mail = mail;
 	}
 
 	public String getPass()

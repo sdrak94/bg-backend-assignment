@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import bg.assignment.bg.backend.manager.MailManager;
 import bg.assignment.bg.backend.model.GResponse;
 import bg.assignment.bg.backend.model.enums.ERegisterResult;
-import bg.assignment.bg.backend.rest.model.Register;
+import bg.assignment.bg.backend.rest.model.requests.RequestRegister;
 
 public class WebUtil
 {
@@ -27,7 +27,7 @@ public class WebUtil
 		return restTemplate.postForObject(GOOGLE_RECAPTCHA_ENDPOINT, requestMap, GResponse.class);
 	}
 	
-	public static String processRegister(final Model model, final Register login, final ERegisterResult result, final MailManager mailController)
+	public static String processRegister(final Model model, final RequestRegister login, final ERegisterResult result, final MailManager mailController)
 	{
 		if (result == ERegisterResult.SUCCESS__DB__CREATED)
 		{
