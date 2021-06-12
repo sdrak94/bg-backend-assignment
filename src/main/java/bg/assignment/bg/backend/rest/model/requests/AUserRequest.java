@@ -1,6 +1,6 @@
 package bg.assignment.bg.backend.rest.model.requests;
 
-public class AUserRequest
+public abstract class AUserRequest
 {
 	private String _colonistId = "";
 

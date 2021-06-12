@@ -18,7 +18,7 @@ public class MailManager
 	@Autowired
 	private JavaMailSender mailSender;
 
-	public void sendVerificationEmail(RequestRegister login)
+	public void sendVerificationEmail(RequestRegister registerRequest)
 	{
 
 	}

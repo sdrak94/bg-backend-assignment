@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 public class CryptConfiguration
@@ -20,5 +21,11 @@ public class CryptConfiguration
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Bean
+	public BCryptPasswordEncoder encodePassword() 
+	{
+		return new BCryptPasswordEncoder();
 	}
 }

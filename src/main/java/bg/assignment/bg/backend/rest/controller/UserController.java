@@ -3,6 +3,7 @@ package bg.assignment.bg.backend.rest.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +17,7 @@ import bg.assignment.bg.backend.model.BgUser;
 import bg.assignment.bg.backend.model.GResponse;
 import bg.assignment.bg.backend.model.enums.ELoginResult;
 import bg.assignment.bg.backend.rest.model.ValidRegistration;
-import bg.assignment.bg.backend.rest.model.answer.AnswerLogin;
+import bg.assignment.bg.backend.rest.model.answers.AnswerLogin;
 import bg.assignment.bg.backend.rest.model.requests.RequestLogin;
 import bg.assignment.bg.backend.rest.model.requests.RequestRegister;
 import bg.assignment.bg.backend.rest.model.requests.RequestVerify;
@@ -26,8 +27,6 @@ import bg.assignment.bg.backend.util.WebUtil;
 @RestController
 public class UserController
 {
-	@Autowired
-	private RegionManager regionManager;
 	
 	@Autowired
 	private boolean recaptchaEnabled;
@@ -59,9 +58,9 @@ public class UserController
     	{
     		final ValidRegistration authenticatedRegistration = loginRequest.getAuthenticatedRegistration();
     		
-    		final String token = jwtUtil.generateToken(authenticatedRegistration.getColonistId());
+    		final String token = jwtUtil.generateToken(authenticatedRegistration);
     		
-    		return ResponseEntity.ok(new AnswerLogin(token, "Token generated successfully!"));
+    		return ResponseEntity.ok(new AnswerLogin(token, "Access Granted, here is your token!"));
     	}
     	
     	return ResponseEntity.ok(new AnswerLogin(loginResult.toString(), "Authentication Denied"));
@@ -93,5 +92,11 @@ public class UserController
 			WebUtil.processRegister(model, register, res, mailManager);
 		}
 		
+	}
+
+	@GetMapping("/testauth") // not a requirement
+	public ResponseEntity<String> testAuth(final Model model)
+	{
+		return ResponseEntity.ok("You are authenticated using JWT");
 	}
 }

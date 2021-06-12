@@ -1,4 +1,4 @@
-package bg.assignment.bg.backend.rest.model.answer;
+package bg.assignment.bg.backend.rest.model.answers;
 
 public class AnswerLogin 
 {
