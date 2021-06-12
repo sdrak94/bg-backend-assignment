@@ -2,7 +2,7 @@ package bg.assignment.bg.backend.rest.model.requests;
 
 import java.io.Serializable;
 
-public class RequestRegister extends AUserRequest implements Serializable
+public class RequestUserRegister extends AUserRequest implements Serializable
 {
 	private String _mail = "";
 	

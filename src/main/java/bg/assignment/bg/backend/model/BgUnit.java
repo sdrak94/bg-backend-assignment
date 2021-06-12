@@ -5,10 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
+
+import bg.assignment.bg.backend.manager.CancelpolicyManager;
+import bg.assignment.bg.backend.manager.RegionManager;
 
 public class BgUnit
 {
@@ -27,6 +31,13 @@ public class BgUnit
 	private final BigDecimal _monthlyPrice;
 	
 	private float _score;
+	
+	int calls;
+	
+	public void inc()
+	{
+		calls++;
+	}
 	
 	public BgUnit(final MultipartFile image, final String title, final String desc, final BgRegion region, final BgCancelPolicy cancelPolicy, final long monthlyPrice)
 	{
@@ -60,6 +71,24 @@ public class BgUnit
 		imagePath.toAbsolutePath();
 		
 		_imageUrl = imagePath.toString();
+	}
+	
+	public BgUnit(final RegionManager regionManager, final CancelpolicyManager cancelpolicyManager, final ResultSet rs) throws SQLException
+	{
+		_unitUUID = UUID.fromString(rs.getString("unit_uuid"));
+		
+		_title = rs.getString("title");
+		_desc = rs.getString("desc");
+		
+		final int regionId = rs.getInt("region_id");
+		final int cancelpolicyId = rs.getInt("cancelpolicy_id");
+		
+		_region = regionManager.getRegionById(regionId);
+		_cancelPolicy = cancelpolicyManager.getCancelpolicyById(cancelpolicyId);
+		
+		_monthlyPrice = rs.getBigDecimal("price");
+		
+		_imageUrl = String.format("images/%s/%s", _unitUUID.toString(), "main.jpg");
 	}
 	
 	public void store(final PreparedStatement pst) throws SQLException
@@ -108,8 +137,23 @@ public class BgUnit
 		return _cancelPolicy;
 	}
 
-	public BigDecimal getMonthlyPrice()
+	public BigDecimal getPrice()
 	{
 		return _monthlyPrice;
+	}
+	
+	public int getRegionId()
+	{
+		return _region.getRegionId();
+	}
+	
+	public int getCancelPolicyId()
+	{
+		return _cancelPolicy.getCancelPolicyId();
+	}
+	
+	public String toString()
+	{
+		return hashCode() + " " + getUnitUUID() + calls++;
 	}
 }

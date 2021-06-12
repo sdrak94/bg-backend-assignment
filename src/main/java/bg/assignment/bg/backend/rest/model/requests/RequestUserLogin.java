@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import bg.assignment.bg.backend.rest.model.ValidRegistration;
 
-public class RequestLogin extends AUserRequest implements Serializable
+public class RequestUserLogin extends AUserRequest implements Serializable
 {
 	private String _pass = "";
 	

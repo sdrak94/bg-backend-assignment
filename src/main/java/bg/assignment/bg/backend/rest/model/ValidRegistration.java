@@ -9,13 +9,13 @@ import java.util.UUID;
 
 import bg.assignment.bg.backend.manager.CryptManager;
 import bg.assignment.bg.backend.model.AUserInfo;
-import bg.assignment.bg.backend.rest.model.requests.RequestRegister;
+import bg.assignment.bg.backend.rest.model.requests.RequestUserRegister;
 
 public class ValidRegistration extends AUserInfo
 {
 	private final String _passwordHash;
 	
-	public ValidRegistration(final CryptManager cryptoController, final RequestRegister register) throws Exception
+	public ValidRegistration(final CryptManager cryptoController, final RequestUserRegister register) throws Exception
 	{
 		super(register.getColonistId(), register.getMail(), UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
 		

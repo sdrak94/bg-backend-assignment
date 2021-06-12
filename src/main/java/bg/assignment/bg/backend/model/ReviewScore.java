@@ -15,4 +15,9 @@ public class ReviewScore
 	{
 		return _reviewScore / _totalReviews;
 	}
+	
+	public int getTotalReviews()
+	{
+		return _totalReviews;
+	}
 }

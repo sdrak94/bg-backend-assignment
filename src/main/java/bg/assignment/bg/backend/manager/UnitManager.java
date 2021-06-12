@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +20,7 @@ import bg.assignment.bg.backend.model.ReviewScore;
 import bg.assignment.bg.backend.model.enums.ECreateUnitResult;
 import bg.assignment.bg.backend.model.enums.EReviewUnitResult;
 import bg.assignment.bg.backend.rest.model.requests.RequestUnitCreate;
+import bg.assignment.bg.backend.rest.model.requests.RequestUnitList;
 import bg.assignment.bg.backend.rest.model.requests.RequestUnitReview;
 
 
@@ -25,11 +28,17 @@ import bg.assignment.bg.backend.rest.model.requests.RequestUnitReview;
 @Scope("singleton")
 public class UnitManager
 {
+	private static final String GET_ALL_UNITS = "SELECT * FROM bg_units";
+	private static final String GET_UNIT = "SELECT * FROM bg_units WHERE unit_uuid=?";
+	
 	private static final String INSERT_UNIT = "INSERT INTO bg_units (unit_uuid, title, `desc`, cancelpolicy_id, region_id, price) VALUES (?, ?, ?, ?, ?, ?)";
 	private static final String INSERT_REVIEW = "INSERT INTO bg_reviews (unit_id, user_id, score, `desc`) VALUES (?, ?, ?, ?)";
 	
 	private static final String GET_REVIEW_SCORES = "SELECT score FROM bg_reviews WHERE unit_id=?";
 //	private static final String GET_REVIEWS = "SELECT * FROM bg_reviews WHERE unit_id=?";
+	
+//	@Autowired
+//	private CacheManager igniteManager;
 	
 	@Autowired
 	private RegionManager regionManager;
@@ -40,8 +49,65 @@ public class UnitManager
 	@Autowired
 	private DatabaseManager databaseManager;
 	
+	//querying the whole bg_users table is not suggested but for the scope of this assignment its fine
+	//all Units should be cached on a map or a distributed cache like Ignite and getAllUnits would not rely on JDBC
+	public List<BgUnit> getAllUnits()
+	{
+		final List<BgUnit> allUnits = new ArrayList<>();
+		
+		try (final Connection con = databaseManager.getConnection();
+			 final PreparedStatement pst = con.prepareStatement(GET_ALL_UNITS);
+			 final ResultSet rs = pst.executeQuery())
+		{
+			while (rs.next())
+			{
+				final BgUnit bgUnit = new BgUnit(regionManager, cancelpolicyManager, rs);
+				allUnits.add(bgUnit);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return allUnits;
+	}
+
+	//this is an assignment requirement
+	public List<BgUnit> retrieveUnits(final RequestUnitList unitListRequest)
+	{
+		final List<BgUnit> allUnits = getAllUnits();
+		
+		allUnits.sort(unitListRequest.getCombinedComparator());
+		
+		
+		return null;
+	}
+	
+	//TODO caching
+	public BgUnit getUnitById(final String unitUUID)
+	{
+		try (final Connection con = databaseManager.getConnection();
+			 final PreparedStatement pst = con.prepareStatement(GET_UNIT))
+		{
+			pst.setString(1, unitUUID);
+			try (final ResultSet rs = pst.executeQuery())
+			{
+				if (rs.next())
+					return new BgUnit(regionManager, cancelpolicyManager, rs);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return null;//not found 
+	}
+	
 	public ECreateUnitResult tryCreateUnit(final RequestUnitCreate createUnitRequest)
 	{
+		
 		final String desc = createUnitRequest.getDesc();
 		if (desc.length() < 3)
 			return ECreateUnitResult.FAILED__IN__TITLE_LESS_3CHAR;
@@ -76,6 +142,7 @@ public class UnitManager
 			bgUnit.store(pst);
 			pst.executeUpdate();
 			createUnitRequest.setNewUnit(bgUnit);
+			
 			return ECreateUnitResult.SUCCESS__DB__CREATED;
 		}
 		catch (Exception e)
@@ -108,8 +175,8 @@ public class UnitManager
 	}
 	
 	public EReviewUnitResult tryReviewUnit(final BgUser reviewerUser, final RequestUnitReview reviewUnitRequest)
-	{	//we don't need to go through the bg_unit table for now as reviews are stored on another table
-		//also we won't check if this user has already reviewed this unit because the db won't accept dup PK
+	{
+		
 		final String unitId = reviewUnitRequest.getUnitUUID();
 		
 		final float reviewScore = reviewUnitRequest.getNewScore();

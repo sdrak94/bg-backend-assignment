@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import bg.assignment.bg.backend.model.enums.ELoginResult;
 import bg.assignment.bg.backend.model.enums.ERegisterResult;
 import bg.assignment.bg.backend.rest.model.ValidRegistration;
-import bg.assignment.bg.backend.rest.model.requests.RequestLogin;
-import bg.assignment.bg.backend.rest.model.requests.RequestRegister;
+import bg.assignment.bg.backend.rest.model.requests.RequestUserLogin;
+import bg.assignment.bg.backend.rest.model.requests.RequestUserRegister;
 
 @Service
 @Scope("singleton")
@@ -31,7 +31,7 @@ public class LoginManager
 	@Autowired
 	private DatabaseManager databaseManager;
 	
-	public ERegisterResult validateRegisterInput(final RequestRegister registerRequest)
+	public ERegisterResult validateRegisterInput(final RequestUserRegister registerRequest)
 	{
 		if (registerRequest.getColonistId().length() < 4)
 			return ERegisterResult.FAILED__IN__USERNAME_LESS_3CHAR;
@@ -48,7 +48,7 @@ public class LoginManager
 		return ERegisterResult.SUCCESS_IN__VALIDATED;
 	}
 	
-	public ERegisterResult processRegister(final RequestRegister registerRequest)
+	public ERegisterResult processRegister(final RequestUserRegister registerRequest)
 	{
 		final var validationRes = validateRegisterInput(registerRequest);
 		if (validationRes == ERegisterResult.SUCCESS_IN__VALIDATED)
@@ -56,7 +56,7 @@ public class LoginManager
 		return validationRes;
 	}
 	
-	private synchronized ERegisterResult tryRegister(final RequestRegister registerRequest)
+	private synchronized ERegisterResult tryRegister(final RequestUserRegister registerRequest)
 	{
 		try (final Connection con = databaseManager.getConnection();
 			 final var pst = con.prepareStatement(INSERT_COLONIST))
@@ -129,7 +129,7 @@ public class LoginManager
 		return null;
 	}
 	
-	public ELoginResult validateLoginInput(final RequestLogin loginRequest)
+	public ELoginResult validateLoginInput(final RequestUserLogin loginRequest)
 	{
 		if (loginRequest.getColonistId().length() < 4)
 			return ELoginResult.FAILED__IN__USERNAME_LESS_3CHAR;
@@ -140,7 +140,7 @@ public class LoginManager
 		return ELoginResult.SUCCESS_IN__VALIDATED;
 	}
 	
-	public ELoginResult processLogin(final RequestLogin loginRequest)
+	public ELoginResult processLogin(final RequestUserLogin loginRequest)
 	{
 		final var validationRes = validateLoginInput(loginRequest);
 		if (validationRes == ELoginResult.SUCCESS_IN__VALIDATED)
@@ -148,7 +148,7 @@ public class LoginManager
 		return validationRes;
 	}
 	
-	private synchronized ELoginResult tryLogin(final RequestLogin loginRequest)
+	private synchronized ELoginResult tryLogin(final RequestUserLogin loginRequest)
 	{
 		try (final Connection con = databaseManager.getConnection();
 			 final var pst = con.prepareStatement(GET_USER))

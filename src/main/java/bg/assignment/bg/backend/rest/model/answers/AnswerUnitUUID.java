@@ -1,10 +1,10 @@
 package bg.assignment.bg.backend.rest.model.answers;
 
-public class AnswerUnitCreate 
+public class AnswerUnitUUID 
 {
 	private final String _unitUUID;
 	
-	public AnswerUnitCreate(final String unitUUID)
+	public AnswerUnitUUID(final String unitUUID)
 	{
 		_unitUUID = unitUUID;
 	}

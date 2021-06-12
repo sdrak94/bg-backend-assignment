@@ -1,11 +1,11 @@
 package bg.assignment.bg.backend.rest.model.answers;
 
-public class AnswerLogin 
+public class AnswerUserLogin 
 {
 	private final String _jwtToken;
 	private final String _reply;
 	
-	public AnswerLogin(final String jwtToken, final String reply)
+	public AnswerUserLogin(final String jwtToken, final String reply)
 	{
 		_jwtToken = jwtToken;
 		_reply = reply;

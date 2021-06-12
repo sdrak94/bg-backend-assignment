@@ -15,6 +15,8 @@ import bg.assignment.bg.backend.rest.model.ValidRegistration;
 
 public class BgUser extends AUserInfo implements UserDetails
 {
+	private static final long serialVersionUID = 5602326603204681499L;
+
 	private static final String UPDATE_USER = "UPDATE bg_users SET verified=?, lastaccess_ts=? WHERE user_uuid=?";
 	
 	private boolean _verified;

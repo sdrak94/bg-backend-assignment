@@ -11,16 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 import bg.assignment.bg.backend.manager.DatabaseManager;
 import bg.assignment.bg.backend.manager.LoginManager;
 import bg.assignment.bg.backend.manager.MailManager;
-import bg.assignment.bg.backend.manager.RegionManager;
 import bg.assignment.bg.backend.manager.UserManager;
 import bg.assignment.bg.backend.model.BgUser;
 import bg.assignment.bg.backend.model.GResponse;
 import bg.assignment.bg.backend.model.enums.ELoginResult;
 import bg.assignment.bg.backend.rest.model.ValidRegistration;
-import bg.assignment.bg.backend.rest.model.answers.AnswerLogin;
-import bg.assignment.bg.backend.rest.model.requests.RequestLogin;
-import bg.assignment.bg.backend.rest.model.requests.RequestRegister;
-import bg.assignment.bg.backend.rest.model.requests.RequestVerify;
+import bg.assignment.bg.backend.rest.model.answers.AnswerUserLogin;
+import bg.assignment.bg.backend.rest.model.requests.RequestUserLogin;
+import bg.assignment.bg.backend.rest.model.requests.RequestUserRegister;
+import bg.assignment.bg.backend.rest.model.requests.RequestUserVerify;
 import bg.assignment.bg.backend.security.jwt.JWTUtil;
 import bg.assignment.bg.backend.util.WebUtil;
 
@@ -50,7 +49,7 @@ public class UserController
 	private JWTUtil jwtUtil;
     
     @PostMapping("/login")
-    public ResponseEntity<AnswerLogin> login(final Model model, @ModelAttribute final RequestLogin loginRequest)
+    public ResponseEntity<AnswerUserLogin> login(final Model model, @ModelAttribute final RequestUserLogin loginRequest)
     {
     	final ELoginResult loginResult = loginManager.processLogin(loginRequest);
     	
@@ -60,14 +59,14 @@ public class UserController
     		
     		final String token = jwtUtil.generateToken(authenticatedRegistration);
     		
-    		return ResponseEntity.ok(new AnswerLogin(token, "Access Granted, here is your token!"));
+    		return ResponseEntity.ok(new AnswerUserLogin(token, "Access Granted, here is your token!"));
     	}
     	
-    	return ResponseEntity.ok(new AnswerLogin(loginResult.toString(), "Authentication Denied"));
+    	return ResponseEntity.ok(new AnswerUserLogin(loginResult.toString(), "Authentication Denied"));
     }
     
 	@PostMapping("/verify") // not a requirement
-	public void verify(final Model model, @ModelAttribute final RequestVerify verify)
+	public void verify(final Model model, @ModelAttribute final RequestUserVerify verify)
 	{
 		final String uuid = verify.getToken();
 		final BgUser bgUser = userManager.getBgUserByUUID(uuid);
@@ -82,7 +81,7 @@ public class UserController
 	}
     
 	@PostMapping("/register") // not a requirement
-	public void register(final Model model, @ModelAttribute final RequestRegister register)
+	public void register(final Model model, @ModelAttribute final RequestUserRegister register)
 	{
 		final GResponse gResponse = recaptchaEnabled ? WebUtil.validateCaptcha(recaptchaSecretKey, register.getCaptchaResponse()) : GResponse.STATIC_RESPONSE_SUCCESS;
 		if (gResponse != null && gResponse.isSuccess())

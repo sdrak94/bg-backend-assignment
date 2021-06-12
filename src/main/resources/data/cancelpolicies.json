@@ -1,8 +1,12 @@
 {
   "cancelpolicies": [
     {
-      "cancelpolicyId": 1,
+      "cancelpolicyId": 0,
       "desc": "Cancelation instant."
+    },
+    {
+      "cancelpolicyId": 1,
+      "desc": "Cancelation instant 10 days notice."
     },
     {
       "cancelpolicyId": 2,
