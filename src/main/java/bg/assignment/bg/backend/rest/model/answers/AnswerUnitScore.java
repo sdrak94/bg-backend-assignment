@@ -4,17 +4,17 @@ import bg.assignment.bg.backend.model.ReviewScore;
 
 public class AnswerUnitScore extends AnswerUnitUUID
 {
-	private final float _score;
+	private final double _score;
 	private final int _totalReviews;
 	
 	public AnswerUnitScore(final String unitUUID, final ReviewScore reviewScore)
 	{
 		super(unitUUID);
-		_score = reviewScore.getAverage();
+		_score = reviewScore.getAverageReview();
 		_totalReviews = reviewScore.getTotalReviews();
 	}
 	
-	public float getScore()
+	public double getAverageScore()
 	{
 		return _score;
 	}

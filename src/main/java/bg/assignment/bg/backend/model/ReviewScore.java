@@ -5,15 +5,19 @@ public class ReviewScore
 	
 	private float _reviewScore;
 	
+	private double _averageReview = -1;
+	
 	public void addReviewScore(final float score)
 	{
 		_totalReviews++;
 		_reviewScore += score;
+		
+		_averageReview = (_reviewScore / _totalReviews);
 	}
 	
-	public float getAverage()
+	public double getAverageReview()
 	{
-		return _reviewScore / _totalReviews;
+		return _averageReview;
 	}
 	
 	public int getTotalReviews()

@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -16,7 +18,9 @@ import bg.assignment.bg.backend.model.BgCancelPolicy;
 import bg.assignment.bg.backend.model.BgRegion;
 import bg.assignment.bg.backend.model.BgUnit;
 import bg.assignment.bg.backend.model.BgUser;
+import bg.assignment.bg.backend.model.RetrieveOffset;
 import bg.assignment.bg.backend.model.ReviewScore;
+import bg.assignment.bg.backend.model.BgUnitFilter;
 import bg.assignment.bg.backend.model.enums.ECreateUnitResult;
 import bg.assignment.bg.backend.model.enums.EReviewUnitResult;
 import bg.assignment.bg.backend.rest.model.requests.RequestUnitCreate;
@@ -45,12 +49,15 @@ public class UnitManager
 
 	@Autowired
 	private CancelpolicyManager cancelpolicyManager;
-	
+
 	@Autowired
 	private DatabaseManager databaseManager;
+
+	@Autowired
+	private OffsetManager offsetManager;
 	
 	//querying the whole bg_users table is not suggested but for the scope of this assignment its fine
-	//all Units should be cached on a map or a distributed cache like Ignite and getAllUnits would not rely on JDBC
+	//all Units should be cached on a map or a distributed cache like Apache Ignite and getAllUnits should not query the database directly
 	public List<BgUnit> getAllUnits()
 	{
 		final List<BgUnit> allUnits = new ArrayList<>();
@@ -62,6 +69,9 @@ public class UnitManager
 			while (rs.next())
 			{
 				final BgUnit bgUnit = new BgUnit(regionManager, cancelpolicyManager, rs);
+				final String unitUUID = bgUnit.getUnitUUID().toString();
+				final ReviewScore reviewScore = getTotalScoreByUnitId(unitUUID, con);//reuse con
+				bgUnit.setReviewScore(reviewScore);
 				allUnits.add(bgUnit);
 			}
 		}
@@ -73,15 +83,26 @@ public class UnitManager
 		return allUnits;
 	}
 
-	//this is an assignment requirement
-	public List<BgUnit> retrieveUnits(final RequestUnitList unitListRequest)
+	// this is an assignment requirement
+	// has heavy performance impact due to the fact that getAllUnits queries the whole database
+	// but provides an amazing seamless feel for user experience.
+	// can be heavily optimized by using a local or a distributed cache like Apache Ignite (out of scope)
+	public Stream<BgUnit> retrieveUnits(final RequestUnitList unitListRequest)
 	{
+		final RetrieveOffset retrieveOffset = offsetManager.calculateOffsets(unitListRequest);
+		
+		final Comparator<BgUnit> unitComparator = unitListRequest.getCombinedComparator();
+		
+		System.out.println(unitComparator);
+		
 		final List<BgUnit> allUnits = getAllUnits();
 		
-		allUnits.sort(unitListRequest.getCombinedComparator());
-		
-		
-		return null;
+		// this can be cached locally to the BgUser instance for future use to boost performance significantly at the cost of some data consistency for the user (out of scope)
+		return allUnits.stream()
+				.sorted(unitComparator)
+				.filter(new BgUnitFilter(unitListRequest))
+				.skip(retrieveOffset.getOffset())
+				.limit(retrieveOffset.getLimit());
 	}
 	
 	//TODO caching
@@ -94,7 +115,11 @@ public class UnitManager
 			try (final ResultSet rs = pst.executeQuery())
 			{
 				if (rs.next())
-					return new BgUnit(regionManager, cancelpolicyManager, rs);
+				{
+					final BgUnit bgUnit = new BgUnit(regionManager, cancelpolicyManager, rs);
+					final ReviewScore reviewScore = getTotalScoreByUnitId(unitUUID, con);//reuse con
+					bgUnit.setReviewScore(reviewScore);
+				}
 			}
 		}
 		catch (Exception e)
@@ -154,10 +179,21 @@ public class UnitManager
 	
 	public ReviewScore getTotalScoreByUnitId(final String unitId)
 	{
+		try (final Connection con = databaseManager.getConnection())
+		{
+			return getTotalScoreByUnitId(unitId, con);
+		}
+		catch (SQLException e)
+		{
+		}
+		return null;
+	}
+	
+	public ReviewScore getTotalScoreByUnitId(final String unitId, final Connection con)
+	{
 		final ReviewScore reviewScore = new ReviewScore();
 		
-		try (final Connection con = databaseManager.getConnection();
-			 final PreparedStatement pst = con.prepareStatement(GET_REVIEW_SCORES))
+		try(final PreparedStatement pst = con.prepareStatement(GET_REVIEW_SCORES))
 		{
 			pst.setString(1, unitId);
 			
@@ -170,7 +206,7 @@ public class UnitManager
 		catch (SQLException e)
 		{
 		}
-
+		
 		return reviewScore;
 	}
 	

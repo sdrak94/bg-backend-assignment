@@ -30,14 +30,7 @@ public class BgUnit
 	
 	private final BigDecimal _monthlyPrice;
 	
-	private float _score;
-	
-	int calls;
-	
-	public void inc()
-	{
-		calls++;
-	}
+	private ReviewScore _reviewScore = new ReviewScore();
 	
 	public BgUnit(final MultipartFile image, final String title, final String desc, final BgRegion region, final BgCancelPolicy cancelPolicy, final long monthlyPrice)
 	{
@@ -71,6 +64,7 @@ public class BgUnit
 		imagePath.toAbsolutePath();
 		
 		_imageUrl = imagePath.toString();
+		
 	}
 	
 	public BgUnit(final RegionManager regionManager, final CancelpolicyManager cancelpolicyManager, final ResultSet rs) throws SQLException
@@ -91,6 +85,11 @@ public class BgUnit
 		_imageUrl = String.format("images/%s/%s", _unitUUID.toString(), "main.jpg");
 	}
 	
+	public void setReviewScore(final ReviewScore reviewScore)
+	{
+		_reviewScore = reviewScore;
+	}
+	
 	public void store(final PreparedStatement pst) throws SQLException
 	{
 		pst.setString(1, _unitUUID.toString());
@@ -102,9 +101,9 @@ public class BgUnit
 		pst.setBigDecimal(6, _monthlyPrice);
 	}
 	
-	public float getScore() 
+	public double getScore() 
 	{
-		return _score;
+		return _reviewScore.getAverageReview();
 	}
 
 	public UUID getUnitUUID()
@@ -154,6 +153,23 @@ public class BgUnit
 	
 	public String toString()
 	{
-		return hashCode() + " " + getUnitUUID() + calls++;
+		return String.format("Title: [%s] UUID[%s]", _title, getUnitUUID().toString());
+	}
+	
+	
+	//for comparator usage only
+	public double getPriceAsDouble()
+	{
+		return _monthlyPrice.doubleValue();
+	}
+
+	public double getRegionIdAsDouble()
+	{
+		return getRegionId();
+	}
+
+	public double getCancelpolicyIdAsDouble()
+	{
+		return getCancelPolicyId();
 	}
 }

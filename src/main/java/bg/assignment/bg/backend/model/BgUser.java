@@ -27,6 +27,8 @@ public class BgUser extends AUserInfo implements UserDetails
 	
 	private final String _passwordHash;
 	
+	private RetrieveOffset retrieveOffset;
+	
 	public BgUser(final String colonistId, final String passwordHash, final String mail, final UUID colonistUUID, final Instant registrationInstant)
 	{
 		super(colonistId, mail, colonistUUID, Timestamp.from(registrationInstant), Timestamp.from(registrationInstant));
@@ -130,5 +132,12 @@ public class BgUser extends AUserInfo implements UserDetails
 	public boolean isEnabled()
 	{
 		return true;
+	}
+	
+	public RetrieveOffset getUserOffsets(final long defLimit)
+	{
+		if (retrieveOffset != null)
+			return retrieveOffset;
+		return retrieveOffset = new RetrieveOffset(defLimit);
 	}
 }
