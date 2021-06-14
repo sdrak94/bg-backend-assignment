@@ -67,11 +67,14 @@ units/retrieve handles the sorting, filtering and indexing of Units simutaniousl
 			the above can be combined using csv style string splitted by "," example: 3,1,2 orders by: region then price and finally by the score
 			you can add a prefix to each csv to make it descending example: 3,v1,v2,0 orders by ascending region the descending price then descending scire and finally by ascending title
 		regionId (optional)
-			show only units belonging to this region id
-		cancelpolicyId (optional)
+			show only units belonging to this region id (csv style splitted by , to simulate an incluse OR)
+			example: 1 (shows only units belonging to regionId 1)
+			example: 1,4 (shows only units belonging to regionId 1,4)
+		cancelpolicyId (optional) (csv style splitted by , to simulate an incluse OR)
 			show only units belonging to this cancelpolicy id
-		title (optional)
+		title (optional) (csv style splitted by , to simulate an incluse OR)
 			show only units that contain this string in their title (case sensitive)
+			example (Red,Blue) shows units that contain Red or Blue in the title
 		limit (configurable can be server side or client side)
 			how many bgUnits should be sent from the API
 		offset
