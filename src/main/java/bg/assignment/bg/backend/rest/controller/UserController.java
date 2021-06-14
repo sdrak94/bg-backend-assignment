@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bg.assignment.bg.backend.manager.DatabaseManager;
 import bg.assignment.bg.backend.manager.LoginManager;
-import bg.assignment.bg.backend.manager.MailManager;
 import bg.assignment.bg.backend.manager.UserManager;
 import bg.assignment.bg.backend.model.BgUser;
 import bg.assignment.bg.backend.model.GResponse;
 import bg.assignment.bg.backend.model.enums.ELoginResult;
 import bg.assignment.bg.backend.rest.model.ValidRegistration;
 import bg.assignment.bg.backend.rest.model.answers.AnswerUserLogin;
+import bg.assignment.bg.backend.rest.model.answers.AnswerUserRegister;
 import bg.assignment.bg.backend.rest.model.requests.RequestUserLogin;
 import bg.assignment.bg.backend.rest.model.requests.RequestUserRegister;
 import bg.assignment.bg.backend.rest.model.requests.RequestUserVerify;
@@ -36,8 +36,8 @@ public class UserController
 	@Autowired
 	private LoginManager loginManager;
 
-    @Autowired
-    private MailManager mailManager;
+//    @Autowired
+//    private MailManager mailManager;
 
     @Autowired
     private UserManager userManager;
@@ -76,21 +76,19 @@ public class UserController
 			bgUser.setVerified();
 			bgUser.store(databaseManager);
 		}
-		else
-			System.out.println(bgUser + " is already verified!");
 	}
     
 	@PostMapping("/register") // not a requirement
-	public void register(final Model model, @ModelAttribute final RequestUserRegister register)
+	public ResponseEntity<AnswerUserRegister> register(final Model model, @ModelAttribute final RequestUserRegister register)
 	{
 		final GResponse gResponse = recaptchaEnabled ? WebUtil.validateCaptcha(recaptchaSecretKey, register.getCaptchaResponse()) : GResponse.STATIC_RESPONSE_SUCCESS;
 		if (gResponse != null && gResponse.isSuccess())
 		{
 			final var res = loginManager.processRegister(register);
-			System.out.println(res);
-			WebUtil.processRegister(model, register, res, mailManager);
+			//WebUtil.processRegister(model, register, res, mailManager);//TODO
+			return ResponseEntity.ok(new AnswerUserRegister(res));
 		}
-		
+		return ResponseEntity.ok(AnswerUserRegister.GSTATIC_ANSWER);
 	}
 
 	@GetMapping("/testauth") // not a requirement

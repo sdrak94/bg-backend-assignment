@@ -10,16 +10,12 @@ public class BgUnitFilter implements Predicate<BgUnit>
 {
 	final EnumSet<ESearchStrategy> _searchStrategies;
 	
-	private final RequestUnitList _unitListRequest;
-
 	private final String[] _containAnyTitles;
 	private final int[] _containAnyRegionIds;
 	private final int[] _containAnyPolicyIds;
 	
 	public BgUnitFilter(final RequestUnitList unitListRequest)
 	{
-		_unitListRequest = unitListRequest;
-		
 		_searchStrategies = unitListRequest.getSearchStrategies();
 		
 		_containAnyTitles    = unitListRequest.getFilterTitles();

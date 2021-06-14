@@ -2,6 +2,8 @@ package bg.assignment.bg.backend.model.enums;
 
 public enum ERegisterResult
 {
+	FAILED__IN__GCAPTCHA_VALIDATION,
+	
 	//validation
 	FAILED__IN__USERNAME_LESS_3CHAR,
 	FAILED__IN__PASSWORD_LESS_3CHAR,

@@ -83,10 +83,14 @@ public class UnitManager
 		return allUnits;
 	}
 
-	// this is an assignment requirement
-	// has heavy performance impact due to the fact that getAllUnits queries the whole database
-	// but provides an amazing seamless feel for user experience.
-	// can be heavily optimized by using a local or a distributed cache like Apache Ignite (out of scope)
+	/** this is an assignment requirement
+	 	has heavy performance impact due to the fact that getAllUnits queries the whole database	 	
+	 	suggested drawbacks of this implementation:
+	 		1) while the user is scrolling down, if a new BgUnit is added, the user won't notice and the offset indexing will go out of sync with his client
+	 		   	solution: caching a user's view on BgUser instance and sync his offset indexes when a new BgUnit is introduced
+	 		2) there is currently no caching, Apache Ignite can solve all performance drawbacks of this method
+	 * @return
+	 */
 	public Stream<BgUnit> retrieveUnits(final RequestUnitList unitListRequest)
 	{
 		final RetrieveOffset retrieveOffset = offsetManager.calculateOffsets(unitListRequest);
@@ -119,6 +123,7 @@ public class UnitManager
 					final BgUnit bgUnit = new BgUnit(regionManager, cancelpolicyManager, rs);
 					final ReviewScore reviewScore = getTotalScoreByUnitId(unitUUID, con);//reuse con
 					bgUnit.setReviewScore(reviewScore);
+					return bgUnit;
 				}
 			}
 		}

@@ -1,7 +1,5 @@
 package bg.assignment.bg.backend.util;
 
-import java.sql.Connection;
-
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;

@@ -12,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bg.assignment.bg.backend.manager.UnitManager;
@@ -49,7 +48,10 @@ public class UnitController
 		return ResponseEntity.badRequest().build();
 	}
 	
-	@PostMapping("/units/review")
+	
+	//assignment requirement
+	//JWT enabled
+	@PostMapping("/review")
 	public ResponseEntity<AnswerUnitScore> reviewUnit(final Model model, @ModelAttribute final RequestUnitReview unitReviewRequest)
 	{
 		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
